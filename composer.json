@@ -16,7 +16,7 @@
     "php": ">=5.4",
     "joomla/filesystem": "~1.0",
     "joomla/language": "~1.0",
-    "etdsolutions/application": "dev-master"
+    "etdsolutions/application": "@dev"
   },
   "autoload": {
     "psr-4": {
