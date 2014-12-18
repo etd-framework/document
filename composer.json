@@ -1,6 +1,7 @@
 {
   "name": "etdsolutions/document",
   "type": "etd-package",
+  "minimum-stability": "dev",
   "description": "Package Document du Framework ETD",
   "homepage": "https://github.com/etd-framework/document",
   "license": "Apache-2.0",
