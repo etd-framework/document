@@ -375,9 +375,9 @@ class Document {
 
         // On définit la liste des espaces de noms dans laquelle le renderer peut se trouver.
         $namespaces = array(
-            '\\EtdSolutions\\Framework',
             Web::getInstance()
-               ->get('app_namespace')
+               ->get('app_namespace'),
+            '\\EtdSolutions'
         );
 
         $className = "";
