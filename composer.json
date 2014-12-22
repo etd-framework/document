@@ -17,6 +17,7 @@
     "php": ">=5.4",
     "joomla/filesystem": "~1.0",
     "joomla/language": "~1.0",
+    "tedivm/jshrink": "~1.0",
     "etdsolutions/application": "@dev"
   },
   "autoload": {
