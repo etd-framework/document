@@ -57,6 +57,16 @@ class Document {
     public $domReadyJs = array();
 
     /**
+     * @var array Scripts JS en ligne exécutés dans le contexte RequireJS.
+     */
+    public $requireJS = array();
+
+    /**
+     * @var array Les modules et leur chemin à charger dans RequireJS.
+     */
+    public $requireModules = array();
+
+    /**
      * @var string String qui contient le template
      */
     protected $template = '';
@@ -240,6 +250,43 @@ class Document {
                 array_unshift($this->domReadyJs, $script);
             } else {
                 array_push($this->domReadyJs, $script);
+            }
+        }
+
+        return $this;
+    }
+
+    public function addModulePath($module, $path) {
+        if (empty($this->requireModules)) {
+           $this->addScript("/vendor/jbanety/requirejs/require.js"); 
+        }
+        $this->requireModules[$module] = $path;
+    }
+
+    /**
+     * Ajoute du JavaScript en ligne exécuté dans le contexte RequireJS.
+     * Il sera exécuté après que le DOM du document soit prêt.
+     *
+     * @param string $script Le script JS à ajouter.
+     * @param bool   $onTop  Place le script en haut de la pile.
+     *
+     * @return Document Cette instance $this pour le chaining.
+     */
+    public function requireJS($module, $script, $onTop = false) {
+
+        if (strpos($module, ' ') !== false) {
+            $module = str_replace(' ', '', $module);
+        }
+
+        if (!isset($this->requireJS[$module])) {
+            $this->requireJS[$module] = array();
+        }
+
+        if (!in_array($script, $this->requireJS[$module])) {
+            if ($onTop) {
+                array_unshift($this->requireJS[$module], $script);
+            } else {
+                array_push($this->requireJS[$module], $script);
             }
         }
 

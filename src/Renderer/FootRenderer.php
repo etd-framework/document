@@ -58,7 +58,7 @@ class FootRenderer extends DocumentRenderer {
         }
 
         // Generate script declarations
-        if (count($document->js['foot']) || count($document->domReadyJs) || count(Text::script())) {
+        if (count($document->js['foot']) || count($document->requireJS) || count($document->domReadyJs) || count(Text::script())) {
 
             $app = Web::getInstance();
             $buffer .= '<script>';
@@ -76,6 +76,31 @@ class FootRenderer extends DocumentRenderer {
             if (count($document->js['foot'])) {
                 foreach ($document->js['foot'] as $content) {
                     $js .= $content . "\n";
+                }
+            }
+
+            if (count($document->requireJS)) {
+                
+                $js .= "requirejs.config({\n";
+                $js .= "  baseUrl: '" . $app->get('uri.base.full') . "vendor/',\n";
+                $js .= "  paths: {\n";
+
+                $modules = array();
+                foreach ($document->requireModules as $id => $path) {
+                    $modules[] = "    " . $id . ": '". $path ."'";
+                }
+                $js .= implode(",\n", $modules) . "\n";
+
+                $js .= "  }\n";
+                $js .= "});\n";
+                
+                foreach ($document->requireJS as $id => $scripts) {
+                    $modules = explode(",", $id);
+                    $js .= "require(" . json_encode($modules) . ", function(" . implode(",", $modules) . ") {\n";
+                    foreach($scripts as $content) {
+                        $js .= "  " . $content . "\n";
+                    }
+                    $js .= "});\n";
                 }
             }
 
