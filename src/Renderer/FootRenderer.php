@@ -58,7 +58,7 @@ class FootRenderer extends DocumentRenderer {
         }
 
         // Generate script declarations
-        if (count($document->js['foot']) || count($document->requireJS) || count($document->domReadyJs) || count(Text::script())) {
+        if (count($document->js['foot']) || count($document->requireModules)|| count($document->requireJS) || count($document->domReadyJs) || count(Text::script())) {
 
             $app = Web::getInstance();
             $buffer .= '<script>';
@@ -79,38 +79,71 @@ class FootRenderer extends DocumentRenderer {
                 }
             }
 
-            if (count($document->requireJS)) {
-                
+            if (count($document->requireModules)) {
+
+                // On crée la configuration de requireJS
                 $js .= "requirejs.config({\n";
-                $js .= "  baseUrl: '" . $app->get('uri.base.full') . "vendor/',\n";
-                $js .= "  paths: {\n";
+                $js .= "  baseUrl: '" . $app->get('uri.base.full') . "vendor/'";
 
-                $modules = array();
-                foreach ($document->requireModules as $id => $path) {
-                    $modules[] = "    " . $id . ": '". $path ."'";
-                }
-                $js .= implode(",\n", $modules) . "\n";
-
-                $js .= "  }\n";
-                $js .= "});\n";
-                
-                foreach ($document->requireJS as $id => $scripts) {
-                    $modules = explode(",", $id);
-                    $js .= "require(" . json_encode($modules) . ", function(" . implode(",", $modules) . ") {\n";
-                    foreach($scripts as $content) {
-                        $js .= "  " . $content . "\n";
+                $shim = array();
+                $paths = array();
+                foreach ($document->requireModules as $module) {
+                    $paths[] = "    " . $module['module'] . ": '". $module['path'] ."'";
+                    if ($module['shim'] !== false) {
+                        $shim[] = "    " . $module['module'] . ": " . json_encode($module['shim']);
                     }
-                    $js .= "});\n";
+                }
+
+                if (count($shim)) {
+                     $js .= ",\n  shim: {\n";
+                     $js .= implode(",\n", $shim) . "\n";
+                     $js .= "  }";
+                }    
+                if (count($paths)) {
+                     $js .= ",\n  paths: {\n";
+                     $js .= implode(",\n", $paths) . "\n";
+                     $js .= "  }";
+                }                
+
+                $js .= "\n});\n";
+            }
+
+            if (count($document->requireJS)) {
+
+                foreach ($document->requireJS as $id => $scripts) {
+                    
+                    $content = "";
+                    $modules = explode(",", $id);
+
+                    foreach($scripts as $script) {
+                        if (!empty($script)) {
+                            $content .= "  " . $script . "\n";
+                        }
+                    }
+
+                    $js .= "require(" . json_encode($modules);
+                    
+                    if (!empty($content)) {
+                        $modules = array_filter($modules, function($module) {
+                            return (strpos($module, '!') === false);
+                        });
+                        $js .= ", function(" . implode(",", $modules) . ") {\n";
+                        $js .= $content;
+                        $js .= "}";
+                    }
+
+                    $js .= ");\n";
+                    
                 }
             }
 
-            if (count($document->domReadyJs)) {
+            /*if (count($document->domReadyJs)) {
                 $js .= "jQuery(document).ready(function() {\n";
                 foreach ($document->domReadyJs as $content) {
                     $js .= $content . "\n";
                 }
                 $js .= "});\n";
-            }
+            }*/
 
             // On compresse le JavaScript avec JShrink si configuré.
             if ($app->get('minify_inline_js', false)) {

@@ -245,23 +245,49 @@ class Document {
      */
     public function addDomReadyJS($script, $onTop = false) {
 
-        if (!in_array($script, $this->domReadyJs)) {
+       /* if (!in_array($script, $this->domReadyJs)) {
             if ($onTop) {
                 array_unshift($this->domReadyJs, $script);
             } else {
                 array_push($this->domReadyJs, $script);
             }
-        }
+        }*/
+
+        $this->requireJS("jquery, domReady!", $script, $onTop);
 
         return $this;
     }
 
-    public function addModulePath($module, $path) {
+    public function addRequireJSModule($module, $path, $shim = false, $deps = null, $exports = null, $init = null) {
+
         if (empty($this->requireModules)) {
             $app = Web::getInstance();
            $this->addScript($app->get('uri.base.path') . "vendor/etdsolutions/requirejs/require.min.js"); 
         }
-        $this->requireModules[$module] = $path;
+        
+        if (!isset($this->requireModules[$module])) {
+            $this->requireModules[$module] = array();
+        }
+
+        $this->requireModules[$module]['module'] = $module;
+        $this->requireModules[$module]['path'] = $path;
+        $this->requireModules[$module]['shim'] = false;
+        
+        if ($shim) {
+            $shim = array();
+            if (isset($deps)) {
+                $shim["deps"] = $deps;
+            }
+            if (isset($exports)) {
+                $shim["exports"] = $exports;
+            }
+            if (isset($init)) {
+                $shim["init"] = $init;
+            }
+            $this->requireModules[$module]['shim'] = $shim;
+        }
+
+        return $this;
     }
 
     /**
@@ -273,7 +299,7 @@ class Document {
      *
      * @return Document Cette instance $this pour le chaining.
      */
-    public function requireJS($module, $script, $onTop = false) {
+    public function requireJS($module, $script = '', $onTop = false) {
 
         if (strpos($module, ' ') !== false) {
             $module = str_replace(' ', '', $module);
