@@ -259,7 +259,7 @@ class Document {
     public function addModulePath($module, $path) {
         if (empty($this->requireModules)) {
             $app = Web::getInstance();
-           $this->addScript($app->get('uri.base.path')"vendor/jbanety/requirejs/require.js"); 
+           $this->addScript($app->get('uri.base.path')"vendor/etdsolutions/requirejs/require.min.js"); 
         }
         $this->requireModules[$module] = $path;
     }
