@@ -67,6 +67,11 @@ class Document {
     public $requireModules = array();
 
     /**
+     * @var array Les packages à charger dans RequireJS.
+     */
+    public $requirePackages = array();
+
+    /**
      * @var string String qui contient le template
      */
     protected $template = '';
@@ -187,6 +192,7 @@ class Document {
      * @return string
      */
     public function getTemplateFile() {
+
         return $this->templateFile;
     }
 
@@ -264,17 +270,21 @@ class Document {
 
         if (empty($this->requireModules)) {
             $app = Web::getInstance();
-           $this->addScript($app->get('uri.base.path') . "vendor/etdsolutions/requirejs/require.min.js"); 
+            $min = ".min";
+            if (JDEBUG) {
+                $min = "";
+            }
+            $this->addScript($app->get('uri.base.path') . "vendor/etdsolutions/requirejs/require" . $min . ".js");
         }
-        
+
         if (!isset($this->requireModules[$module])) {
             $this->requireModules[$module] = array();
         }
 
         $this->requireModules[$module]['module'] = $module;
-        $this->requireModules[$module]['path'] = $path;
-        $this->requireModules[$module]['shim'] = false;
-        
+        $this->requireModules[$module]['path']   = $path;
+        $this->requireModules[$module]['shim']   = false;
+
         if ($shim) {
             $shim = array();
             if (isset($deps)) {
@@ -287,6 +297,15 @@ class Document {
                 $shim["init"] = $init;
             }
             $this->requireModules[$module]['shim'] = $shim;
+        }
+
+        return $this;
+    }
+
+    public function addRequirePackage($package) {
+
+        if (!in_array($package, $this->requirePackages)) {
+            $this->requirePackages[] = strtolower($package);
         }
 
         return $this;

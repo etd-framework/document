@@ -34,6 +34,11 @@ class FootRenderer extends DocumentRenderer {
 
         $buffer = '';
 
+        $min = ".min";
+        if (JDEBUG) {
+            $min = "";
+        }
+
         // Generate stylesheet links
         if (count($document->stylesheets['foot'])) {
             foreach ($document->stylesheets['foot'] as $src) {
@@ -59,8 +64,7 @@ class FootRenderer extends DocumentRenderer {
 
         // On ajoute les textes pour les traductions.
         if (count(Text::script())) {
-            $document->addRequireJSModule('text', 'etdsolutions/js/language/text')
-                     ->requireJS('text', "text.load(" . json_encode(Text::script()) . ");");
+            $document->requireJS('etdsolutions/js/text', "text.load(" . json_encode(Text::script()) . ");");
         }
 
         // Generate script declarations
@@ -68,6 +72,12 @@ class FootRenderer extends DocumentRenderer {
 
             $app = Web::getInstance();
             $buffer .= '<script>';
+
+            // On ajoute le package de la librairie JS.
+            $document->addRequirePackage('etdsolutions/js');
+
+            // On ajoute le chemin vers les modules des controllers.
+            $document->addRequireJSModule('media', $app->get('uri.base.full') . "media/js");
 
             // On prépare le buffer pour les scripts JS.
             $js = "\n";
@@ -78,11 +88,24 @@ class FootRenderer extends DocumentRenderer {
                 }
             }
 
-            if (count($document->requireModules)) {
+            // On crée la configuration de requireJS
+            $js .= "requirejs.config({\n";
+            $js .= "  baseUrl: '" . $app->get('uri.base.full') . "vendor/',\n";
 
-                // On crée la configuration de requireJS
-                $js .= "requirejs.config({\n";
-                $js .= "  baseUrl: '" . $app->get('uri.base.full') . "vendor/'";
+            // require-css
+            $js .= "  map: {\n";
+            $js .= "    '*': {\n";
+            $js .= "      'css': 'etdsolutions/requirecss/css" . $min . "'\n";
+            $js .= "    }\n";
+            $js .= "  }";
+
+            // packages
+            if (count($document->requirePackages)) {
+                $js .= ",\n  packages: " . json_encode($document->requirePackages);
+            }
+
+            // modules
+            if (count($document->requireModules)) {
 
                 $shim  = array();
                 $paths = array();
@@ -104,15 +127,9 @@ class FootRenderer extends DocumentRenderer {
                     $js .= "  }";
                 }
 
-                // require-css
-                $js .= ",\n  map: {\n";
-                $js .= "    '*': {\n";
-                $js .= "      'css': 'etdsolutions/requirecss/css.min'\n";
-                $js .= "    }\n";
-                $js .= "  }";
-
-                $js .= "\n});\n";
             }
+
+            $js .= "\n});\n";
 
             if (count($document->requireJS)) {
 
@@ -134,10 +151,12 @@ class FootRenderer extends DocumentRenderer {
 
                             return (strpos($module, '!') === false);
                         });
-                        $modules = array_map(function($module) {
+                        $modules = array_map(function ($module) {
+
                             if (strpos($module, '/') !== false) {
                                 $module = substr($module, strrpos($module, '/') + 1);
                             }
+
                             return $module;
                         }, $modules);
                         $js .= ", function(" . implode(",", $modules) . ") {\n";
