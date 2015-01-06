@@ -105,11 +105,11 @@ class FootRenderer extends DocumentRenderer {
                 }
 
                 // require-css
-                $js .= ",\n map: {\n";
-                $js .= "        '*': {\n";
-                $js .= "            'css': 'etdsolutions/requirecss/css.min'\n";
-                $js .= "        }\n";
-                $js .= "    }";
+                $js .= ",\n  map: {\n";
+                $js .= "    '*': {\n";
+                $js .= "      'css': 'etdsolutions/requirecss/css.min'\n";
+                $js .= "    }\n";
+                $js .= "  }";
 
                 $js .= "\n});\n";
             }
