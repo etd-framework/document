@@ -161,6 +161,10 @@ class FootRenderer extends DocumentRenderer {
                                 $module = str_replace('.min', '', $module);
                             }
 
+                            if (strpos($module, '.') !== false) {
+                                $module = substr($module, strrpos($module, '.') + 1);
+                            }
+
                             return $module;
                         }, $modules);
                         $js .= ", function(" . implode(",", $modules) . ") {\n";
