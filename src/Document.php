@@ -245,15 +245,8 @@ class Document {
      */
     public function addDomReadyJS($script, $onTop = false) {
 
-       /* if (!in_array($script, $this->domReadyJs)) {
-            if ($onTop) {
-                array_unshift($this->domReadyJs, $script);
-            } else {
-                array_push($this->domReadyJs, $script);
-            }
-        }*/
-
-        $this->requireJS("jquery, domReady!", $script, $onTop);
+        $this->addRequireJSModule('domReady', 'etdsolutions/domready/domReady')
+             ->requireJS("jquery, domReady!", $script, $onTop);
 
         return $this;
     }
