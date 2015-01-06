@@ -20,6 +20,7 @@
     "etdsolutions/application": "@dev",
     "tedivm/jshrink": "~1.0",
     "etdsolutions/requirejs": "~2.1",
+    "etdsolutions/requirecss": ">=0.1",
     "etdsolutions/modernizr": "~2.8",
     "etdsolutions/jquery": "~1.0",
     "etdsolutions/domready": "@dev",

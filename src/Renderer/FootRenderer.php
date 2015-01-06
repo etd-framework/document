@@ -57,21 +57,20 @@ class FootRenderer extends DocumentRenderer {
             }
         }
 
+        // On ajoute les textes pour les traductions.
+        if (count(Text::script())) {
+            $document->addRequireJSModule('text', 'etdsolutions/js/language/text')
+                     ->requireJS('text', "text.load(" . json_encode(Text::script()) . ");");
+        }
+
         // Generate script declarations
-        if (count($document->js['foot']) || count($document->requireModules)|| count($document->requireJS) || count($document->domReadyJs) || count(Text::script())) {
+        if (count($document->js['foot']) || count($document->requireModules) || count($document->requireJS) || count($document->domReadyJs)) {
 
             $app = Web::getInstance();
             $buffer .= '<script>';
 
             // On prépare le buffer pour les scripts JS.
             $js = "\n";
-
-            if (count(Text::script())) {
-                $js .= "if (typeof EtdSolutions !== undefined) {\n";
-                $js .= "  var Text = EtdSolutions.Framework.Language.Text;";
-                $js .= "  Text.load(" . json_encode(Text::script()) . ");\n";
-                $js .= "}\n";
-            }
 
             if (count($document->js['foot'])) {
                 foreach ($document->js['foot'] as $content) {
@@ -85,25 +84,32 @@ class FootRenderer extends DocumentRenderer {
                 $js .= "requirejs.config({\n";
                 $js .= "  baseUrl: '" . $app->get('uri.base.full') . "vendor/'";
 
-                $shim = array();
+                $shim  = array();
                 $paths = array();
                 foreach ($document->requireModules as $module) {
-                    $paths[] = "    " . $module['module'] . ": '". $module['path'] ."'";
+                    $paths[] = "    " . $module['module'] . ": '" . $module['path'] . "'";
                     if ($module['shim'] !== false) {
                         $shim[] = "    " . $module['module'] . ": " . json_encode($module['shim']);
                     }
                 }
 
                 if (count($shim)) {
-                     $js .= ",\n  shim: {\n";
-                     $js .= implode(",\n", $shim) . "\n";
-                     $js .= "  }";
-                }    
+                    $js .= ",\n  shim: {\n";
+                    $js .= implode(",\n", $shim) . "\n";
+                    $js .= "  }";
+                }
                 if (count($paths)) {
-                     $js .= ",\n  paths: {\n";
-                     $js .= implode(",\n", $paths) . "\n";
-                     $js .= "  }";
-                }                
+                    $js .= ",\n  paths: {\n";
+                    $js .= implode(",\n", $paths) . "\n";
+                    $js .= "  }";
+                }
+
+                // require-css
+                $js .= ",\n map: {\n";
+                $js .= "        '*': {\n";
+                $js .= "            'css': 'etdsolutions/requirecss/css.min'\n";
+                $js .= "        }\n";
+                $js .= "    }";
 
                 $js .= "\n});\n";
             }
@@ -111,29 +117,36 @@ class FootRenderer extends DocumentRenderer {
             if (count($document->requireJS)) {
 
                 foreach ($document->requireJS as $id => $scripts) {
-                    
+
                     $content = "";
                     $modules = explode(",", $id);
 
-                    foreach($scripts as $script) {
+                    foreach ($scripts as $script) {
                         if (!empty($script)) {
                             $content .= "  " . $script . "\n";
                         }
                     }
 
                     $js .= "require(" . json_encode($modules);
-                    
+
                     if (!empty($content)) {
-                        $modules = array_filter($modules, function($module) {
+                        $modules = array_filter($modules, function ($module) {
+
                             return (strpos($module, '!') === false);
                         });
+                        $modules = array_map(function($module) {
+                            if (strpos($module, '/') !== false) {
+                                $module = substr($module, strrpos($module, '/') + 1);
+                            }
+                            return $module;
+                        }, $modules);
                         $js .= ", function(" . implode(",", $modules) . ") {\n";
                         $js .= $content;
                         $js .= "}";
                     }
 
                     $js .= ");\n";
-                    
+
                 }
             }
 

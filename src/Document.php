@@ -238,15 +238,24 @@ class Document {
      * Ajoute du script JavaScript en ligne exécuté dans le contexte jQuery.
      * Il sera exécuté après que le DOM du document soit prêt.
      *
-     * @param string $script Le script JS à ajouter.
-     * @param bool   $onTop  Place le script en haut de la pile.
+     * @param string $script  Le script JS à ajouter.
+     * @param bool   $onTop   Place le script en haut de la pile.
+     * @param string $modules Des modules additionnels à charger par RequireJS.
      *
      * @return Document Cette instance $this pour le chaining.
      */
-    public function addDomReadyJS($script, $onTop = false) {
+    public function addDomReadyJS($script, $onTop = false, $modules = '') {
+
+        $module = "jquery";
+
+        if (!empty($modules)) {
+            $module .= ", " . $modules;
+        }
+
+        $module .= ", domReady!";
 
         $this->addRequireJSModule('domReady', 'etdsolutions/domready/domReady')
-             ->requireJS("jquery, domReady!", $script, $onTop);
+             ->requireJS($module, $script, $onTop);
 
         return $this;
     }
