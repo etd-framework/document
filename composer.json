@@ -21,7 +21,9 @@
     "tedivm/jshrink": "~1.0",
     "etdsolutions/requirejs": "~2.1",
     "etdsolutions/modernizr": "~2.8",
-    "etdsolutions/jquery": "~1.0"
+    "etdsolutions/jquery": "~1.0",
+    "etdsolutions/domready": "@dev",
+    "etdsolutions/js": "@dev"
   },
   "autoload": {
     "psr-4": {
