@@ -260,7 +260,7 @@ class Document {
 
         $module .= ", domReady!";
 
-        $this->addRequireJSModule('domReady', 'etdsolutions/domready/domReady')
+        $this->addRequireJSModule('domReady', 'vendor/etdsolutions/domready/domReady')
              ->requireJS($module, $script, $onTop);
 
         return $this;

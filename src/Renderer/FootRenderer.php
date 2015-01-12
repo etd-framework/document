@@ -64,7 +64,7 @@ class FootRenderer extends DocumentRenderer {
 
         // On ajoute les textes pour les traductions.
         if (count(Text::script())) {
-            $document->requireJS('etdsolutions/js/text', "text.load(" . json_encode(Text::script()) . ");");
+            $document->requireJS('vendor/etdsolutions/js/text', "text.load(" . json_encode(Text::script()) . ");");
         }
 
         // Generate script declarations
@@ -77,7 +77,7 @@ class FootRenderer extends DocumentRenderer {
             $document->addRequirePackage('etdsolutions/js');
 
             // On ajoute le chemin vers les modules des controllers.
-            $document->addRequireJSModule('media', $app->get('uri.base.full') . "media/js");
+            //$document->addRequireJSModule('media', $app->get('uri.base.full') . "media/js");
 
             // On prépare le buffer pour les scripts JS.
             $js = "\n";
@@ -90,12 +90,12 @@ class FootRenderer extends DocumentRenderer {
 
             // On crée la configuration de requireJS
             $js .= "requirejs.config({\n";
-            $js .= "  baseUrl: '" . $app->get('uri.base.full') . "vendor/',\n";
+            $js .= "  baseUrl: '" . $app->get('uri.base.full') . "',\n";
 
             // require-css
             $js .= "  map: {\n";
             $js .= "    '*': {\n";
-            $js .= "      'css': 'etdsolutions/requirecss/css" . $min . "'\n";
+            $js .= "      'css': 'vendor/etdsolutions/requirecss/css" . $min . "'\n";
             $js .= "    }\n";
             $js .= "  }";
 
