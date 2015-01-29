@@ -21,10 +21,11 @@ class MessageRenderer extends DocumentRenderer {
         // Initialise variables.
         $buffer = '';
         $lists  = array();
+        $app    = Web::getInstance();
+        $text   = $app->getText();
 
         // Get the message queue
-        $messages = Web::getInstance()
-                       ->getMessageQueue();
+        $messages = $app->getMessageQueue();
 
         // Build the sorted message list
         if (is_array($messages) && !empty($messages)) {
@@ -42,7 +43,7 @@ class MessageRenderer extends DocumentRenderer {
             foreach ($lists as $type => $messages) {
                 $buffer .= '<li>';
                 $buffer .= '<div class="alert alert-' . $type . ' alert-dismissable" role="alert">';
-                $buffer .= '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">' . Text::_('APP_GLOBAL_CLOSE') . '</span></button>';
+                $buffer .= '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">' . $text->translate('APP_GLOBAL_CLOSE') . '</span></button>';
                 foreach ($messages as $i => $message) {
                     if ($i > 0) {
                         $buffer .= "<br>";

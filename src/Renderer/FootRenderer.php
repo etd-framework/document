@@ -11,7 +11,6 @@ namespace EtdSolutions\Document\Renderer;
 
 use EtdSolutions\Application\Web;
 use EtdSolutions\Document\Document;
-use Joomla\Language\Text;
 
 defined('_JEXEC') or die;
 
@@ -63,8 +62,10 @@ class FootRenderer extends DocumentRenderer {
         }
 
         // On ajoute les textes pour les traductions.
-        if (count(Text::script())) {
-            $document->requireJS('vendor/etdsolutions/js/text', "text.load(" . json_encode(Text::script()) . ");");
+        $text = Web::getInstance()
+                   ->getText();
+        if (count($text->script())) {
+            $document->requireJS('vendor/etdsolutions/js/text', "text.load(" . json_encode($text->script()) . ");");
         }
 
         // Generate script declarations
@@ -164,7 +165,7 @@ class FootRenderer extends DocumentRenderer {
                             if (strpos($module, '.') !== false) {
                                 $module = substr($module, strrpos($module, '.') + 1);
                             }
-                            
+
                             $module = str_replace('-', '', $module);
 
                             return $module;
