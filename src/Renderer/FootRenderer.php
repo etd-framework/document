@@ -164,6 +164,8 @@ class FootRenderer extends DocumentRenderer {
                             if (strpos($module, '.') !== false) {
                                 $module = substr($module, strrpos($module, '.') + 1);
                             }
+                            
+                            $module = str_replace('-', '', $module);
 
                             return $module;
                         }, $modules);
