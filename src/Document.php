@@ -69,7 +69,11 @@ class Document {
     /**
      * @var array Les packages à charger dans RequireJS.
      */
-    public $requirePackages = array();
+    public $requirePackages = array(array(
+        "name"     => "etdsolutions",
+        "location" => "js/etdsolutions",
+        "main"     => "app"
+    ));
 
     /**
      * @var string String qui contient le template
