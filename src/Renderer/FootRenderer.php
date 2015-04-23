@@ -75,7 +75,7 @@ class FootRenderer extends DocumentRenderer {
             $buffer .= '<script>';
 
             // On ajoute le package de la librairie JS.
-            $document->addRequirePackage('etdsolutions/js');
+            //$document->addRequirePackage('etdsolutions/js');
 
             // On ajoute le chemin vers les modules des controllers.
             //$document->addRequireJSModule('media', $app->get('uri.base.full') . "media/js");
