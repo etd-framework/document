@@ -302,9 +302,20 @@ class Document {
         return $this;
     }
 
-    public function addRequirePackage($package) {
+    public function addRequirePackage($package, $location = null, $main = null) {
 
         if (!in_array($package, $this->requirePackages)) {
+
+            if (isset($location) || isset($main)) {
+                $package = ["name" => $package];
+                if (isset($location)) {
+                    $package["location"] = $location;
+                }
+                if (isset($main)) {
+                    $package["main"] = $main;
+                }
+            }
+
             $this->requirePackages[] = strtolower($package);
         }
 
