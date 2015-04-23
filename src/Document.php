@@ -320,7 +320,7 @@ class Document {
                 }
             }
 
-            $this->requirePackages[] = strtolower($package);
+            $this->requirePackages[] = $package;
         }
 
         return $this;
@@ -391,9 +391,9 @@ class Document {
 
         if (!in_array($css, $this->styles[$position])) {
             if ($onTop) {
-                array_unshift($this->styles, $css);
+                array_unshift($this->styles[$position], $css);
             } else {
-                array_push($this->styles, $css);
+                array_push($this->styles[$position], $css);
             }
         }
 
